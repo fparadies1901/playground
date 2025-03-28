@@ -19,6 +19,8 @@ operations = {
     "/": divide
 }
 
+print(Art.calculator)
+
 def calculator():
 
     continue_calculation = True
