@@ -20,7 +20,7 @@ operations = {
 }
 
 def calculator():
-    print(Art.logo)
+
     continue_calculation = True
     f_number = float(input("What's the first number?:     "))
 
@@ -43,5 +43,3 @@ def calculator():
             calculator() # gleich einer Schleife zu verstehen
 
 calculator()
-
-
