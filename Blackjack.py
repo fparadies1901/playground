@@ -52,7 +52,7 @@ def play_game():
     """Starts a new game Blackjack"""
     clear_screen()
 
-    print(art.blackjack)
+    print(Art.blackjack)
     user_score = -1
     cp_score = -1
     cp_cards = []
