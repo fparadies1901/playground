@@ -1,0 +1,18 @@
+def solve():
+    solution_found = False # Boolean variable indicating whether the solution has been found
+    
+    # Run through the possible values of x, y and z using nested for loops (values between -1 and 2)
+    for x in range(-1, 3):
+        for y in range(-1, 3):
+            for z in range(-1, 3):
+                if x + y + z == 2 and x - y - z == 0 and  2 * x + y * z == 0:
+                    solution_found = True
+                    break                   # we exit the third for loop (z) since the solution has been found  
+                    
+            if solution_found:
+                break                       # we exit the second for loop (y) if the solution has been found
+        if solution_found:
+            break                           # we exit the first for loop (x) if the solution has been found
+    return x, y, z
+
+print(f"Solution found: {solve()}")
