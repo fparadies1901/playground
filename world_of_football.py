@@ -109,3 +109,90 @@ print(mean_ratings(1190424))
 
 # Display the result for the second match whose id is 1190424. Is this average higher than in the first match?
 print(mean_ratings(1190424) > mean_ratings(1190418))
+
+# Check that by summing up the number of passes of each player we get the total number of passes made by the team.
+"""
+team_total_pass = 0
+    
+for i in pass_player[1190418]:
+        team_total_pass += int(i[1])
+
+print(team_total_pass)
+"""
+
+def total_pass_team(id_match):
+    team_total_pass = 0
+    
+    for i in pass_player[id_match]:
+        team_total_pass += int(i[1])
+    
+    return team_total_pass
+
+total_pass_team(1190418)
+
+# More generally, which team had the most possession in a match?
+max_possession = 0
+top_team = None
+
+for match_id, (team, possession) in team_possession.items():
+    possession_float = float(possession)
+    
+    if possession_float > max_possession:
+        max_possession = possession_float
+        top_team = team
+
+"""
+for i in team_possession.keys() :
+    if float(team_possession[i][1]) > maximum : 
+        maximum = float(team_possession[i][1])
+        team = team_possession[i][0]
+"""
+
+print(f"{top_team} had the most possession with {max_possession}%")
+
+'''
+Now let's assume that the company wants to have quick access to basic information about a team for any match. For example, it wants to have access to the 
+list of players who have participated in a match.
+'''
+
+# Create a function team_player_names that returns a list of the names of the players in the team for a given match and their positions. 
+# Display the result for the match 1190496.
+def team_player_names(id_match):
+    list_player = []
+    
+    if id_match in role_player:
+        for player, position in role_player[id_match]:
+            list_player.append((player, position))
+    
+    return list_player
+
+team_player_names(1190496)
+
+# Create a midfielders_name function that returns the names of the central midfielders (MC) of the team for a given match. Display the result for the match 1190422.
+def midfielders_name(id_match):
+    list_player = []
+    
+    if id_match in role_player:
+            for player, position in role_player[id_match]:
+                if position == 'MC':
+                    list_player.append((player))
+    
+    return list_player
+
+midfielders_name(1190422)
+
+# Create a worst_player function that returns, for a given match, the worst player in the team. Display the result for the match 1190496.
+def worst_player(id_match):
+    worst_score = float('inf')
+    worst_player_name = None
+    
+    if id_match in ratings_player:
+        for player, score in ratings_player[id_match]:
+            if score < worst_score and score > 0:
+                worst_score = score
+                worst_player_name = player
+    
+    return worst_player_name
+
+worst_player(1190496)
+
