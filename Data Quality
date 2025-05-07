@@ -2,6 +2,7 @@
 ######################################################################## DATA QUALITY #############################################################################
 ###################################################################################################################################################################
 
+###################################################################################################################################################################
 ######################################################################## Data inspection ##########################################################################
 """
 The first thing to do before exploring a dataset is to take an interest in the metadata, if there are any, and the information we have on the data:
@@ -151,3 +152,136 @@ View the documentation or help() for more parameters and examples of use. Likewi
 ## Transform these two variables so that they are of type datetime and in the format: "%Y-%m-%d"
 # Sales_2017["Order date"] = pd.to_datetime(Sales_2017["Order date"], format = "%m/%d/%y")
 # Sales_2017["Delivery date"] = pd.to_datetime(Sales_2017["Delivery date"], format = "%Y-%m-%d")
+
+##################################################################################################################################################################
+######################################################################## Missing values ##########################################################################
+
+"""
+In statistics, we speak of missing data or missing values when no value has been entered for a given variable, for a given observation.
+
+Missing values are common and can have a significant effect on the visualization, analysis, performance of predictions, or any other use of the data that 
+contains them.
+
+The proper management of missing data is therefore fundamental to ensure the completeness of a data set as well as its precision when it comes to replacing them.
+
+Here are some of the main reasons why a dataset may have missing data:
+
+    - The user forgot to fill in a field.
+    - Data was lost during manual transfer from an old database.
+    - There was a programming error.
+    - The user has chosen not to fill in a field related to his beliefs about how the results would be used or interpreted.
+    - Sometimes these are just random errors; other times it is a systematic problem.
+
+It is important to understand these different types of missing data from a statistical point of view. The type of missing data will influence how you 
+replace missing values.
+
+"""
+
+############################################# Identifications of missing values ###################################################################################
+"""
+The table display shows that some data is missing (NaN). These standard missing values are the ones that pandas automatically detect.
+
+When a table imported with pandas contains empty boxes, they are automatically detected and replaced by NaN. The same goes for boxes containing NA,N/A or 
+n/a in the file.
+
+In order to easily detect missing values and on any type of array, all you have to do is use the isna() and notna() functions, which also have their equivalents 
+in methods for DataFrames and Series.
+
+The first returns True for each missing element and False otherwise. The second returns the opposite.
+"""
+
+## Display the total number of missing values per column of Products, using the sum() method.
+# products.isna().sum()
+# or products.notna().sum()
+    
+##For each product in the table (therefore each row), display whether the variable 'Category' is present or not.
+# products["Category"].isna()
+
+"""
+This gives a summary of the completeness of the different columns. The use of isna() is recommended, because in Python, 2 two NaN are not equal when comparing. 
+Indeed, unlike two None which can be compared, the operation:
+
+np.nan == np.nan
+returns False.
+
+So the comparison between an element of the Data Frame and a None or a np.nan cannot be used to check the presence or not of missing values.
+"""
+
+
+"""
+Surprisingly, in addition to the 3 classic types of sales channel, we observe the "?" and "na" modalities, which obviously also designate missing values.
+
+These different types of missing values can come from different tools/languages or have been entered manually.
+
+To be recognized directly by pandas when reading a file, it is possible to add them to a list and then insert this list to the function used to read the file. 
+This can be achieved using the parameter na_values.
+"""
+
+## Read the file "Sales2019.xlsx" again, specifying that the " ", "?" and "na" must be treated as missing values using the na_values argument.
+# Sales = pd.read_excel("Sales2019.xlsx", na_values = [" ", "?", "na"])
+# pd.isna(Sales).sum()
+
+"""
+The " ", "?" and "na" have been replaced by missing values and are therefore now correctly identified by pandas.
+
+However, sometimes certain tools / people use other means to indicate the missing values, in particular for the numeric variables, by indicating them by -1, 
+999 or even 0 in some cases.
+"""
+
+## Display the mathematical description of the variable 'Quantity'.
+# Sales["Quantity"].describe()
+
+"""
+The maximum number of quantity is indeed 12, but the minimum is equal to -1, which does not make sense for a quantity of products sold.
+
+Orders whose quantity is -1 are therefore orders whose quantity is not indicated, for various reasons, and should be considered as a missing value.
+"""
+
+## Replace all the values of 'Quantity' outside the interval [5,12] by np.nan (note: we could have replaced only the value -1 by missing values, 
+## but you see how to do it with an interval).
+# Sales.loc[(Sales["Quantity"] < 5) | (Sales["Quantity"] > 12), "Quantity"] = np.nan
+
+# or
+# Sales.Quantity.replace(-1, np.nan, inplace=True) # do not forget: inplace=True
+
+"""
+Calculations with missing data:
+    All the calculation or statistical methods seen in the previous modules take into account the missing values.
+
+    For example, during a sum, missing values are considered zero. For a product, the missing values ​ are considered equal to 1.
+
+    The sum of an empty or completely filled series or column of NA is therefore 0.
+    The product of an empty or completely filled series or column of NA is therefore 1.
+
+"""
+
+
+################################################# Replacement of missing values ###################################################################################
+"""
+All the missing values of our DataFrames are now well identified. To carry out the analyzes, models or other uses which will be made of them, it is essential to 
+replace them appropriately.
+
+The fillna() method allows you to replace missing values with other values, in several ways:
+
+To replace all the NAs of a Series or a DataFrame with the same value, all you have to do is indicate this value in the method.
+Example:
+
+    df.fillna (0) # to replace all NAs with 0
+
+The method parameter allows to use the previous non-missing values (method = 'pad') or following (method ='bfill') to replace the missing values of a Series.
+Example:
+
+    df.fillna (method = 'pad') # each NA will be replaced by the last non-NA value in its column
+
+It is also possible to use a dictionary or a series, whose labels (for dictionaries) or index (for series) correspond to the columns of the DataFrame that 
+you want to fill:
+Examples:
+
+    df.fillna ({'col_1': val_1, 'col_2': 'val_2'}) # Replace the NAs of column 'col_1' by val_1 and those of column 'col_2' by 'val_2'.
+
+    df.fillna (df.mean ()) # Replace the NAs of each column by the average of the column (ok because the column names match)
+
+    
+    The method fillna has the parameter inplace=False by default. To store the new DataFrame with the replaced values, store it in a variable 
+    (e.g. df = df.fillna(0)) or set inplace=True (e.g.  df.fillna(0, inplace=True)).
+"""
