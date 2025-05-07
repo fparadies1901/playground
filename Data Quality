@@ -1,0 +1,153 @@
+###################################################################################################################################################################
+######################################################################## DATA QUALITY #############################################################################
+###################################################################################################################################################################
+
+######################################################################## Data inspection ##########################################################################
+"""
+The first thing to do before exploring a dataset is to take an interest in the metadata, if there are any, and the information we have on the data:
+
+- Where does this data come from? 
+- How was this data collected?
+- What types of files do we have? 
+- - What sizes? 
+- What are the characteristics present?
+
+Manually collected datasets often contain errors or approximations. Faced with such data, it is necessary to clean them up, 
+and to keep in mind that they are not always representative of reality.
+
+Here, for example, it is stated that not all sales have been digitized. We are therefore missing some of the data.
+
+"""
+
+## Display the information of the DataFrame
+# print( "Customers info :\n")
+# customers.info()
+
+"""
+It is recommended to check that the types of variables associated with each column agree with what these columns represent.
+
+Here is a table of correspondence of the data types of pandas with those of python and numpy:
+
+dtype pandas	    type python	        type numpy	                            usage
+object	            str or mixed	    str or mixed	                        Text or a mixture of numeric and non-numeric values
+int64	            int	int_            (8/16/32/64), uint_ (8/16/32/64)	    Integers
+float64	            float	            float_ (16/32/64)	                    Decimal numbers
+bool	            bool	            bool	                                True / False
+datetime64	        datetime	        datetime64 [ns]	                        Dates and time values
+timedelta [ns]	    NA	                NA	                                    Difference between two dates
+category	        NA	                NA	                                    Finite list of textual data
+
+
+"""
+
+########################################### Data standardization - ensure that each variable is of the correct type ###############################################
+
+## Transform the 'Postal code' column into character strings (type: str) using the .astype () method.
+# customers['Postal code'] = customers['Postal code'].astype(str)
+
+"""
+Some variables have a defined syntax / format / interval and it is necessary to ensure that these properties are respected.
+"""
+
+## Check that the postal codes all correspond to a 5-digit numeric code, between 01000 and 96000.
+#count_correct_postal_codes = 0
+#count_total = len(customers['Postal code'])
+
+# for pos, value in enumerate(customers['Postal code']):
+#    if len(str(value)) == 5 and str(value).isnumeric() and '01000' < str(value) < '96000':
+#        count_correct_postal_codes += 1 
+#    else:
+#        count_correct_postal_codes += 0
+
+# print(f"{count_correct_postal_codes} of {count_total} postal codes have the correct format.")
+
+########################################### Data standardization - ensure consistency of data format ##############################################################
+"""
+To ensure the quality of the data, it is also necessary to check the consistency of the latter. 
+When it is collected by different people, over long periods of time, it often happens that the data is not written in the same way.
+
+The objective of this step is to ensure that each line follows the same rules, and that 2 lines which contain the same information cannot be written 
+in 2 different ways.
+"""
+
+## Standardize the telephone numbers.
+# for (index, numero) in enumerate(customers["Phone number"]):
+#    if numero[0]=='+':
+#        customers.loc[index, 'Phone number']='0' + customers.loc[index, 'Phone number'][4:]
+
+## Capitalize the columns 'Name' and 'City' of customers. Hint: try using .apply.
+# customers['Name'] = customers['Name'].apply(lambda x : x.upper())  
+
+# customers['City'] = customers['City'].apply(lambda x : x.upper())
+
+## Print the unique values of the column City. Ensure the data is valid by correcting the incorrect city names:
+# print(customers['City'].unique())
+
+    # We realize that "RENES" and "PERPINAN" are misspelled, and that "PARIS LA DÉFENSE" is duplicated with "PARIS".
+#customers.replace({'RENES' : 'RENNES', 
+#                 'PERPINAN' : 'PERPIGNAN',
+#                 'PARIS LA DÉFENSE' : 'PARIS'},
+#                inplace = True)
+
+"""
+When analyzing data, it is also very important to ensure the uniqueness of certain variables. 
+In particular with the text variables, which may have been filled in in different ways to designate the same person / entity.
+
+Example: The variable 'Country' 'of a dataset could contain both the values "GB", "United Kingdom" and "UK" which nevertheless designate the same country, 
+this which could lead to erroneous analyzes subsequently.
+"""
+
+########################################### Data standardization - manage duplicates ##############################################################################
+"""
+Duplicates are also a source of errors and can sometimes distort the analyzes carried out on the data which contains them. With some exceptions, 
+it is generally preferable to delete fully copied rows to ensure good validity of the data.
+"""
+
+## Displays the number of duplicates
+# print("Number of duplicates:", customers.duplicated().sum())
+
+## Delete duplicates
+# customers = customers.drop_duplicates()
+
+########################################### Data standardization - manage dates ###################################################################################
+"""
+Dates are an often problematic type of format, and you should always ensure consistency between different dated variables before using a dataset. 
+They must be: of the same type, in the same format and correspond to real dates. For this, we often use the pandas function to_datetime. Here is an example of 
+how to use it:
+
+pd.to_datetime('2030-26-10',
+               format='%Y-%d-%m')
+
+>>> Timestamp('2030-10-26 00:00:00')     
+In the previous example, we convert the date '2030-26-10' into a datatime object. The parameter format is used to specify the format of the input date 
+(in this case '2030-26-10'). To introduce how to write the format of a date, here are some commonly used formats:
+
+    ('YYYY-MM-DD', format='%Y-%d-%m')  
+    ('YYYY/MM/DD', format='%Y/%d/%m')
+    ('YY/MM/DD', format='%y/%d/%m')
+
+Here, we use %Y, %m and %d to specify the year, month and day respectively. Notice that for the third example, since the year only has the last two digits, 
+we use %y.
+
+    When converting a date that uses %y, the output always has a year strictly greater than 1968. For example, take the following dates of 
+    format %y/%m/%d: 68/10/01 and 69/10/01. They will be converted to 2068/10/01 and 1969/10/01 respectively.
+
+It may also happen that you have a date and time together. You can include this format using %H, %M and %S for hours, minutes and seconds. 
+This can be seen in the following example:
+
+    pd.to_datetime('2018-10-26 12:00:00',
+                    format='%Y-%m-%d %H:%M:%S')
+
+>>> Timestamp('2018-10-26 12:00:00')
+You can use this function on arrays, Series and DataFrames. Here we covered the basics, but this function can do much more. 
+View the documentation or help() for more parameters and examples of use. Likewise, other alternatives like the datetime library can be used.
+
+"""
+
+## In the Sales_2017 dataframe, what types are the variables 'Delivery date' and 'Order date' ?
+# Sales_2017["Order date"].dtype # => 0 = object
+# Sales_2017["Delivery date"].dtype # => 0 = object
+
+## Transform these two variables so that they are of type datetime and in the format: "%Y-%m-%d"
+# Sales_2017["Order date"] = pd.to_datetime(Sales_2017["Order date"], format = "%m/%d/%y")
+# Sales_2017["Delivery date"] = pd.to_datetime(Sales_2017["Delivery date"], format = "%Y-%m-%d")
