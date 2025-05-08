@@ -285,3 +285,58 @@ Examples:
     The method fillna has the parameter inplace=False by default. To store the new DataFrame with the replaced values, store it in a variable 
     (e.g. df = df.fillna(0)) or set inplace=True (e.g.  df.fillna(0, inplace=True)).
 """
+
+## Replace missing values of 'Product_Name' in a logical way.
+# Products.Product_Name.fillna('Product '+Products.Index.astype(str), inplace=True)
+
+## Replace the missing value of the variable 'Category' by the most frequent value.
+# Products.Category.fillna(Products.Category.mode()[0], inplace=True)
+
+"""
+For the 'Quantity' column of Sales, we notice that 7 lines are now np.nan. For this type of variable, it is very difficult to predict with the naked eye 
+what to replace missing values. We can therefore use algorithms to do it automatically.
+
+One of these missing value completion algorithms is called KnnImputer. This algorithm, known as 'K Nearest Neighbors', assumes that data with close values 
+on columns other than the one where the data is missing will also have close values on the column where the data is missing.
+
+To determine by which value to replace a NaN, it will therefore look at the values of the k nearest neighbors and take the average.
+"""
+## Import the function KNNImputer from sklearn.impute. Instantiate an imputer object of the KNNImputer class with the parameter n_neighbors = 4.
+# from sklearn.impute import KNNImputer
+
+#imputer = KNNImputer(n_neighbors = 4)
+
+## Create a DataFrame val_num containing all the numeric variables of Sales.
+#val_num = Sales.drop(["Order number", "Channel", "Order Date", "Delivery Date"], axis=1)
+
+## Replace missing values of val_num with the k-nearest neighbors method. Categorical variables have been removed because this method only works if all the 
+# columns are numeric.
+"""
+    Example of use: imputer.fit_transform(df)returns an array, where the missing values of df are replaced. 
+
+    In this operation, the column names are lost but the out preserves the order of the columns and rows. You can use this fact to create, if needed, 
+    a new pandas DataFrame using pd.DataFrame.
+"""
+    
+#val_num =imputer.fit_transform(val_num)
+#val_num = pd.DataFrame(val_num)
+
+#val_num["Quantity"]=val_num[2]
+
+# Display the values taken by the variable 'Quantity' in Sales and in val_num.
+#print(Sales["Quantity"].unique())
+#print(val_num["Quantity"].unique())
+
+"""
+Sometimes the values that are missing are crucial to understand / use the data, so it is not possible to replace them, and in many cases it is even 
+recommended to remove the affected rows. When a column contains a large majority of missing values, it may be useful to delete it as well.
+"""
+
+## Delete, using dropna(), the lines for which the Customer Id is missing. Hint: use the parameter subset.
+#Sales.dropna(subset = ["Customer Id"], axis = 0, inplace = True)
+
+## Using the fillna method, replace missing values in the 'Channel' column with the following non-missing values. 
+## (method) => forward: ffill, backwards: bfill
+# Sales["Channel"].fillna(method='ffill', inplace = True)
+
+
