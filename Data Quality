@@ -301,6 +301,7 @@ on columns other than the one where the data is missing will also have close val
 
 To determine by which value to replace a NaN, it will therefore look at the values of the k nearest neighbors and take the average.
 """
+
 ## Import the function KNNImputer from sklearn.impute. Instantiate an imputer object of the KNNImputer class with the parameter n_neighbors = 4.
 # from sklearn.impute import KNNImputer
 
@@ -311,6 +312,7 @@ To determine by which value to replace a NaN, it will therefore look at the valu
 
 ## Replace missing values of val_num with the k-nearest neighbors method. Categorical variables have been removed because this method only works if all the 
 # columns are numeric.
+
 """
     Example of use: imputer.fit_transform(df)returns an array, where the missing values of df are replaced. 
 
@@ -339,4 +341,105 @@ recommended to remove the affected rows. When a column contains a large majority
 ## (method) => forward: ffill, backwards: bfill
 # Sales["Channel"].fillna(method='ffill', inplace = True)
 
+###################################################################################################################################################################
+######################################################################## Text processing ##########################################################################
+
+"""
+We are going to use a keyword approach to try to detect, for example, which accidents involve trucks or not. We will have to create a function that will 
+allow us to detect if the word 'truck' is present in the accident description or not. To do this, we will proceed step by step.
+
+Python handles strings like lists of characters. Thus, we can access an element of a String using square brackets and concatenate String with the + operator, 
+as for lists.
+
+    'abcde'[3] 
+    >>>'d'
+
+However, unlike lists, it is possible to test the inclusion of one String in another directly with the in operator
+Execute the following cell.
+
+    print("['b','c'] in ['a','b','c','d'] returns", ['b', 'c'] in ['a','b','c','d'])
+    print("'bc' in 'abcd' returns", 'bc' in 'abcd')
+
+        ['b','c'] in ['a','b','c','d'] returns False
+        'bc' in 'abcd' returns True
+"""
+
+## Create a function word_detection() that takes as argument a list of strings and a sentence, and returns True if at least one of them is in the sentence and 
+## False otherwise.
+
+def word_detection(liste, phrase):
+    for i in liste:
+        if i in phrase:
+            return True
+    return False
+
+"""
+This function could allow us to detect when the word truck is in the description. However, this method only looks if a string is present or not in a String, 
+but not that a word is contained in a sentence. For example:
+
+    'truck' in 'I was struck by it'
+    >>> True
+
+By using this function, we risk overestimating the number of accidents caused by trucks.
+
+One technique for detecting the presence of 'truck' and not 'struck' is to place spaces before and after 'truck' to make sure it is not contained in another 
+larger word.
+"""
+
+## Create a word_detection2() function that takes a list of words and a sentence as arguments, and returns True if any of the words are contained in the sentence, 
+## using the method shown above.
+
+def word_detection2(liste, phrase):
+    for word in liste:
+        if " " + word + " " in phrase:
+            return True
+    return False
+
+"""
+However, a correctly written sentence starts with a capital letter and ends with a period (not with spaces). So if the word 'truck' is at the beginning or 
+at the end of the sentence, it will not be detected by the previous function because it will not be surrounded by 2 spaces. The same thing happens if it is next 
+to a comma, a semicolon or a colon.
+
+To solve this problem, we will make a list of strings that should be checked to ensure the presence or absence of a word in a sentence. 
+For example, if the word to be detected is 'word', the following strings should be detected:
+
+    [' word ', ' word,', ' word:', ' word;', ' word.', 'Word ', 'Word,', 'Word:', 'Word;', 'Word.']
+"""
+    
+## Using the .capitalize() method which adds a capital letter to the beginning of a String, create a possib function which takes as argument a word, 
+## and returns the list of strings to be detected.
+
+def possib(words):
+   return [word.capitalize() for word in words]
+
+
+## Using the possib() and word_detection() functions together, look for the following words in their associated sentences.
+liste = 'be'
+phrase = "Don't be afraid to go outside the box"
+
+word_detection(liste = possib(word = 'be'), 
+               phrase="Don't be afraid to go outside the box")
+
+liste = 'be'
+phrase = "You are the best"
+
+word_detection(liste = possib(word = 'be'), 
+               phrase="You are the best")
+
+
+## Use the function possib() to count the number of lines that contain the word 'truck' or 'trucks'.
+
+#count_rows = 0
+#variation_of_word_truck = possib('truck') + possib('trucks')
+
+#for line in accidents["Description"]:
+#    for word in variation_of_word_truck:
+#        if word in line:
+#            count_rows += 1
+#            break
+
+#print(count_rows)
+
+
+## Determine the proportion of accidents involving one or more trucks.
 
